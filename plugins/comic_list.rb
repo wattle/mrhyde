@@ -42,7 +42,7 @@ module Jekyll
     @@comics = []
 
     def self.create(site)
-      dir = site.config['comics_dir'] || '_comics'
+      dir = site.config['comics_dir'] || 'comics'
       base = File.join(site.source, dir)
       public_base = File.join(site.dest, dir)
       return unless File.exists?(base)
@@ -94,7 +94,7 @@ module Jekyll
     end
 
     def load_teplate(file, context)
-      includes_dir = File.join(context.registers[:site].source, '_includes')
+      includes_dir = File.join(context.registers[:site].source, 'includes')
 
       if File.symlink?(includes_dir)
         return "Includes directory '#{includes_dir}' cannot be a symlink"

@@ -10,7 +10,13 @@ Includes / Should include:
 * Google analytics integration
 * Blog support
 * SEO tagging for comics / listings / etc...
+* Sass and Coffeescript compiling
 
+
+## Getting Started ##
+
+Install Jekyll:
+* `gem install jekyll`
 
 Directory Structure:
 * plugins - plugins that provide the build functionality

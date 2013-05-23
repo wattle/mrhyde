@@ -1,9 +1,12 @@
 name: Example Comic
 pygments: true
 root: /
+
+# Cleanup the base jekyll naming
 source:       content
 destination:  ./public
 plugins: plugins
+layouts: layouts
 comic_dir: ./content/comics
 
 
