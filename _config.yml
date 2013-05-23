@@ -1,0 +1,19 @@
+name: Example Comic
+pygments: true
+root: /
+source:       content
+destination:  ./public
+plugins: plugins
+comic_dir: ./content/comics
+
+
+# Blog settings
+
+permalink: /blog/:year/:month/:day/:title/
+category_dir: blog/categories
+paginate: 10          # Posts per page on the blog index
+pagination_dir: blog  # Directory base for pagination URLs eg. /blog/page/2/
+
+
+# Google Analytics
+# google_analytics_tracking_id:
