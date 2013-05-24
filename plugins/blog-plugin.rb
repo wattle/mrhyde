@@ -1,4 +1,5 @@
 module Jekyll
+
   # Monkey patch the postings 
   class Post
 

@@ -22,7 +22,6 @@ Directory Structure:
 * plugins - plugins that provide the build functionality
 * content - comic / blog content
 ** blog - blog articles for the site
-** sketchbook - random image / page generation 
 ** comics - comics root, add a directory per comic 
 
 For each comic:
@@ -34,4 +33,5 @@ For each comic:
 * Add comic generation based on name that will create directory and index
 * Add sketchbook generation? Link up with a tumblr account?
 * Push to S3 / create aws site with cloudfront / s3 / route 52
+* sketchbook vs blog? - random image / page generation 
  

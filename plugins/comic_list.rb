@@ -7,6 +7,10 @@
 # {% comiclist comic_list.html %}
 module Jekyll
 
+  class Site
+    attr_accessor :comics
+  end
+
   class Comic
     include Convertible
 
@@ -15,11 +19,10 @@ module Jekyll
 
     def initialize(site, base, dir, name, url_key)
       @site = site
-
       @comicdata = self.read_yaml(File.join(base, dir), name)
       @comicdata['content'] = markdownify(self.content)
       @comicdata['key'] = url_key
-      @comicdata['link'] = "/"
+      @comicdata['link'] = "/comics/#{url_key}"
     end
 
     def publish?
@@ -56,17 +59,20 @@ module Jekyll
           if File.directory?("#{base}/#{f}")
             comic = Comic.new(site, site.source, "#{dir}/#{f}", 'index.markdown', f)
             @@comics << comic.comicdata if comic.publish?
-
+            comic_dir = "#{public_base}/#{f}"
             unless File.exists?("#{public_base}")
               # TODO make dir
-
+              Dir.mkdir("#{public_base}")
             end 
-            unless File.exists?("#{public_base}/#{f}")
+            unless File.exists?(comic_dir)
               # TODO make dir 
+              Dir.mkdir(comic_dir)
             end
 
           end
       end
+      site.comics = @@comics
+
     end
 
     def self.comics
@@ -93,7 +99,7 @@ module Jekyll
       super
     end
 
-    def load_teplate(file, context)
+    def load_template(file, context)
       includes_dir = File.join(context.registers[:site].source, 'includes')
 
       if File.symlink?(includes_dir)
@@ -117,7 +123,7 @@ module Jekyll
 
     def render(context)
       output = super
-      template = load_teplate(@template_file, context)
+      template = load_template(@template_file, context)
 
       Liquid::Template.parse(template).render('comics' => @comics).gsub(/\t/, '')
     end
