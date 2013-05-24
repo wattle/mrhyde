@@ -72,7 +72,6 @@ module Jekyll
           end
       end
       site.comics = @@comics
-
     end
 
     def self.comics

@@ -1,10 +1,10 @@
-# Title: Comic list tag for Jekyll
+# Title: Comic Episode list tag for Jekyll
 # Author: driedtoast - http://github.com/driedtoast
 #
-# Syntax {% comiclist [template] %}
+# Syntax {% episodes [template] %}
 #
 # Example:
-# {% comiclist comic_list.html %}
+# {% episodes episode_list.html %}
 module Jekyll
 
   class Episode
@@ -85,7 +85,7 @@ module Jekyll
 
   class EpisodelistTag < Liquid::Tag
     def initialize(tag_name, markup, tokens)
-      @comic = markup
+      @template_file = markup.strip
       super
     end
 
@@ -107,7 +107,7 @@ module Jekyll
       #    "Included file '#{file}' not found in _includes directory"
       #  end
       #end
-
+      " Loading  #{@template_file}"
     end
 
     def render(context)
@@ -125,8 +125,7 @@ module Jekyll
         end
         puts comic_meta
         output = super
-        # template = load_template(@template_file, context)
-        template = " Loading  #{@comic}"
+        template = load_template(@template_file, context)
         Liquid::Template.parse(template).render('episodes' => @episodes).gsub(/\t/, '')
         # TODO load the comic dir and the files in them via the episodes list
         # and create a list similar to comic_list.html
