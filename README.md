@@ -29,9 +29,15 @@ For each comic:
 * Update the index.markdown with the details of the comic name
 
 
+## Projects Integrated ##
+* (Jekyell Assets)[http://ixti.net/jekyll-assets/]
+* (Jekyell)[http://jekyllrb.com/]
+
+
 ## TODO ##
 * Add comic generation based on name that will create directory and index
 * Add sketchbook generation? Link up with a tumblr account?
 * Push to S3 / create aws site with cloudfront / s3 / route 52
 * sketchbook vs blog? - random image / page generation 
- 
+* add http://repost.us/ support 
+* add support for https://developers.google.com/+/web/share/interactive

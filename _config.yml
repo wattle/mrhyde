@@ -9,6 +9,7 @@ plugins: plugins
 layouts: layouts
 comic_dir: ./content/comics
 
+exclude: [layouts/**|includes/**]
 
 # Blog settings
 
@@ -17,6 +18,29 @@ category_dir: blog/categories
 paginate: 10          # Posts per page on the blog index
 pagination_dir: blog  # Directory base for pagination URLs eg. /blog/page/2/
 
+
+
+#
+# Plugin: jekyll-assets
+#
+assets:
+  #
+  # Pathname of the destination of generated (bundled) assets relative
+  # to the destination of the root.
+  #
+  dirname: assets
+  #
+  # Base URL of assets paths.
+  #
+  baseurl: /
+  cachebust: none
+  #
+  # Pathnames where to find assets relative to the root of the site.
+  #
+  sources:
+    - ./javascripts
+    - ./css
+    - ./images
 
 # Google Analytics
 # google_analytics_tracking_id:
