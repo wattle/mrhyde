@@ -19,7 +19,6 @@ paginate: 10          # Posts per page on the blog index
 pagination_dir: blog  # Directory base for pagination URLs eg. /blog/page/2/
 
 
-
 #
 # Plugin: jekyll-assets
 #
@@ -43,4 +42,15 @@ assets:
     - ./images
 
 # Google Analytics
-# google_analytics_tracking_id:
+google_analytics_tracking_id:
+
+# Twitter
+twitter_handle:
+twitter_tweet_button: true
+
+# Github
+github_handle:
+twitter_tweet_button: true
+
+# Share this id
+share_this_id: 

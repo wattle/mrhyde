@@ -55,8 +55,8 @@ module Jekyll
       # Reverse chronological order
       entries = entries.reverse
       entries.each do |f|
-          # if File.directory?(f)
-          if File.directory?("#{base}/#{f}")
+          
+          if File.directory?("#{base}/#{f}") && f != 'pages'
             comic = Comic.new(site, site.source, "#{dir}/#{f}", 'index.markdown', f)
             @@comics << comic.comicdata if comic.publish?
             comic_dir = "#{public_base}/#{f}"

@@ -4,6 +4,8 @@ title: Example site
 ---
 
 <div id="home">
+  {% comiclist comic_list.html %}
+
   <h1>Blog Posts</h1>
   <ul class="posts">
     {% for post in site.posts %}
@@ -11,7 +13,5 @@ title: Example site
     {% endfor %}
   </ul>
 
-
-  {% comiclist comic_list.html %}
 
 </div>
