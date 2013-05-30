@@ -46,17 +46,15 @@ module Jekyll
 
     def self.create(site)
       dir = site.config['comics_dir'] || 'comics'
+      comic_page_dir = site.config['comic_page_dir'] || 'pages'
       base = File.join(site.source, dir)
       public_base = File.join(site.dest, dir)
       return unless File.exists?(base)
 
       entries  = Dir.chdir(base) { site.filter_entries(Dir['**/*']) }
-
       # Reverse chronological order
-      entries = entries.reverse
       entries.each do |f|
-          
-          if File.directory?("#{base}/#{f}") && f != 'pages'
+          if File.directory?("#{base}/#{f}") && f !~ /.+\/#{comic_page_dir}$/
             comic = Comic.new(site, site.source, "#{dir}/#{f}", 'index.markdown', f)
             @@comics << comic.comicdata if comic.publish?
             comic_dir = "#{public_base}/#{f}"
@@ -68,7 +66,8 @@ module Jekyll
               # TODO make dir 
               Dir.mkdir(comic_dir)
             end
-
+          elsif File.directory?("#{base}/#{f}") && f =~ /(.+)\/#{comic_page_dir}$/
+            EpisodeList.create(site, "#{dir}/#{$1}/#{comic_page_dir}", $1)            
           end
       end
       site.comics = @@comics

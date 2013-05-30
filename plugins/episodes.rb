@@ -13,13 +13,14 @@ module Jekyll
     attr_accessor :data, :content
     attr_accessor :episodedata
 
-    def initialize(site, base, dir, url_key)
+    def initialize(site, base_dir, url_key, comic)
       @site = site
-      puts " CREATING NAME #{name} - Episodoe"
-      @episodedata = self.read_yaml(File.join(base, dir), name)
+      puts " CREATING NAME #{url_key} - Episodoe"
+      @episodedata = self.read_yaml(base_dir, "#{url_key}.markdown")
       @episodedata['content'] = markdownify(self.content)
       @episodedata['key'] = url_key
       @episodedata['link'] = "/"
+      @episodedata['comic'] = comic
     end
 
     def publish?
@@ -39,10 +40,10 @@ module Jekyll
 
 
   class EpisodeList
-    @@episodes = []
+    @@episodes = {}
+    @@episode_map = {}
 
-    def self.create(site)
-      dir = site.config['comics_dir'] || 'comics'
+    def self.create(site, dir, comic )
       base = File.join(site.source, dir)
       public_base = File.join(site.dest, dir)
       return unless File.exists?(base)
@@ -52,16 +53,24 @@ module Jekyll
       # Reverse chronological order
       entries = entries.reverse
       entries.each do |f|
-          # if File.directory?(f)
-          unless File.directory?("#{base}/#{f}") || f == "index.markdown"
-            puts " getting episode #{f}"
-            episode = Episode.new(site, site.source, "#{dir}/#{f}", f)
-            @@episodes << episode.comicdata if episode.publish?
-            comic_dir = "#{public_base}/#{f}"
-            unless File.exists?("#{comic_dir}/#{f}")
-              Dir.mkdir("#{comic_dir}/#{f}")
+          puts " f is #{f}" # need to add episode images to the episode
+          if f =~ /(.+)\.markdown/
+            puts " processing #{f}"
+            puts " getting episode #{f} #{$1}"
+
+            episode = Episode.new(site, base, $1, comic)
+            if episode.publish?
+              @@episodes[comic] ||= [] 
+              @@episodes[comic] << episode.episodedata
+            end
+
+            comic_dir = "#{public_base}/../#{$1}"
+            unless File.exists?("#{comic_dir}")
+              puts " making #{comic_dir}"
+              Dir.mkdir("#{comic_dir}")
             end 
-            # TODO Need to push episode files into this 
+          elsif f =~ /(.+)-(\d+)\.[png|jpg|gif]/
+            puts "#{$1} #{$2}"
           end
       end
     end
@@ -111,7 +120,7 @@ module Jekyll
     end
 
     def render(context)
-      @episodes = EpisodeList.episodes
+      @episodes = EpisodeList.episodes['example']
       comic_url = context.environments.first['page']['url']
       if comic_url =~ /^\/comics\/(.+)\/index.html$/
         comic_name = $1
