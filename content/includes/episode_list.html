@@ -1,0 +1,15 @@
+{% if episodes %}
+	<ul>
+	{% for episode in episodes %}
+		<li>
+			<h3>{% if episode.link %}<a href="comics/{{ episode.comic }}/{{ episode.key }}">{{ episode.title }}</a>{% else %}{{ episode.title }}{% endif %}</h3>
+			{{ episode.content }}
+			{% if episode.categories %}
+			<ul class="metadata">
+				<li>{{ episode.categories | join:', ' }}</li>
+			</ul>
+			{% endif %}
+		</li>
+	{% endfor %}
+	</ul>
+{% endif %}
