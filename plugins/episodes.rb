@@ -1,3 +1,4 @@
+require_relative "./lib/include_tag"
 # Title: Comic Episode list tag for Jekyll
 # Author: driedtoast - http://github.com/driedtoast
 #
@@ -15,7 +16,6 @@ module Jekyll
 
     def initialize(site, base_dir, url_key, comic)
       @site = site
-      puts " CREATING NAME #{url_key} - Episodoe"
       @episodedata = self.read_yaml(base_dir, "#{url_key}.markdown")
       @episodedata['content'] = markdownify(self.content)
       @episodedata['key'] = url_key
@@ -53,11 +53,7 @@ module Jekyll
       # Reverse chronological order
       entries = entries.reverse
       entries.each do |f|
-          puts " f is #{f}" # need to add episode images to the episode
           if f =~ /(.+)\.markdown/
-            puts " processing #{f}"
-            puts " getting episode #{f} #{$1}"
-
             episode = Episode.new(site, base, $1, comic)
             if episode.publish?
               @@episodes[comic] ||= [] 
@@ -65,12 +61,13 @@ module Jekyll
             end
 
             comic_dir = "#{public_base}/../#{$1}"
-            unless File.exists?("#{comic_dir}")
-              puts " making #{comic_dir}"
-              Dir.mkdir("#{comic_dir}")
-            end 
-          elsif f =~ /(.+)-(\d+)\.[png|jpg|gif]/
-            puts "#{$1} #{$2}"
+            Dir.mkdir("#{comic_dir}") unless File.exists?("#{comic_dir}")
+          # add images below 
+          elsif f.downcase =~ /(.+)_.+-(\d+)\.[png|jpg|gif]/
+            episode_name = $1
+            (@@episode_map["#{comic}:#{episode_name}"] ||= []) << f
+            comic_dir = "#{public_base}/../#{episode_name}"
+            Dir.mkdir("#{comic_dir}") unless File.exists?("#{comic_dir}")
           end
       end
     end
@@ -81,50 +78,21 @@ module Jekyll
   end
 
 
-  # Jekyll hook - the generate method is called by jekyll, and generates all of the category pages.
-  class GenerateEpisodes < Generator
-    safe true
-    priority :low
-
-    def generate(site)
-      # EpisodeList.create(site)
-    end
-  end
-
-
-  class EpisodelistTag < Liquid::Tag
+  class EpisodelistTag < IncludeTag
     def initialize(tag_name, markup, tokens)
       @template_file = markup.strip
       super
     end
 
-    def load_template(file, context)
-      #includes_dir = File.join(context.registers[:site].source, 'includes')
-      #if File.symlink?(includes_dir)
-      #  return "Includes directory '#{includes_dir}' cannot be a symlink"
-      #end
 
-      #if file !~ /^[a-zA-Z0-9_\/\.-]+$/ || file =~ /\.\// || file =~ /\/\./
-      #  return "Include file '#{file}' contains invalid characters or sequences"
-      #end
-      puts " Loading file #{file}"
-      #Dir.chdir(includes_dir) do
-      #  choices = Dir['**/*'].reject { |x| File.symlink?(x) }
-      #  if choices.include?(file)
-      #    source = File.read(file)
-      #  else
-      #    "Included file '#{file}' not found in _includes directory"
-      #  end
-      #end
-      " Loading  #{@template_file}"
-    end
 
     def render(context)
-      @episodes = EpisodeList.episodes['example']
+      output = super
       comic_url = context.environments.first['page']['url']
       if comic_url =~ /^\/comics\/(.+)\/index.html$/
         comic_name = $1
-        puts comic_name
+        puts "PRocessing comic #{comic_name}"
+        @episodes = EpisodeList.episodes[comic_name]
         comic_meta = nil
         context.registers[:site].comics.each do |comic|
           if comic['key'] == comic_name
@@ -132,13 +100,8 @@ module Jekyll
             break
           end
         end
-        puts comic_meta
-        output = super
-        template = load_template(@template_file, context)
-        Liquid::Template.parse(template).render('episodes' => @episodes).gsub(/\t/, '')
-        # TODO load the comic dir and the files in them via the episodes list
-        # and create a list similar to comic_list.html
-
+        
+        render_with_data(context, 'episodes' => @episodes, 'comic' => comic_meta )
       end
     end
   end

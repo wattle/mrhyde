@@ -1,3 +1,5 @@
+require_relative "./lib/include_tag"
+
 # Title: Comic list tag for Jekyll
 # Author: driedtoast - http://github.com/driedtoast
 #
@@ -90,41 +92,18 @@ module Jekyll
   end
 
 
-  class ComiclistTag < Liquid::Tag
+  class ComiclistTag < IncludeTag
     def initialize(tag_name, markup, tokens)
       @comics = ComicList.comics
       @template_file = markup.strip
       super
     end
 
-    def load_template(file, context)
-      includes_dir = File.join(context.registers[:site].source, 'includes')
-
-      if File.symlink?(includes_dir)
-        return "Includes directory '#{includes_dir}' cannot be a symlink"
-      end
-
-      if file !~ /^[a-zA-Z0-9_\/\.-]+$/ || file =~ /\.\// || file =~ /\/\./
-        return "Include file '#{file}' contains invalid characters or sequences"
-      end
-
-      Dir.chdir(includes_dir) do
-        choices = Dir['**/*'].reject { |x| File.symlink?(x) }
-        if choices.include?(file)
-          source = File.read(file)
-        else
-          "Included file '#{file}' not found in _includes directory"
-        end
-      end
-
-    end
-
     def render(context)
       output = super
-      template = load_template(@template_file, context)
-
-      Liquid::Template.parse(template).render('comics' => @comics).gsub(/\t/, '')
+      render_with_data(context, 'comics' => @comics)
     end
+
   end
 
 
