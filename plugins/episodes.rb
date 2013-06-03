@@ -8,22 +8,37 @@ require_relative "./lib/include_tag"
 # {% episodes episode_list.html %}
 module Jekyll
 
-  class Episode
-    include Convertible
+  class Page 
+
+    alias :old_destination :destination
+    def destination(dest)
+      result = old_destination(dest)
+      puts "DEST IS #{dest} -> #{result}"
+      result
+    end
+  end
+
+  class Episode < Page
 
     attr_accessor :data, :content
     attr_accessor :episodedata
 
-    def initialize(site, base_dir, url_key, comic)
+    def initialize(site, base_dir, dir,  url_key, comic)
       @site = site
-      @episodedata = self.read_yaml(base_dir, "#{url_key}.markdown")
+      @episodedata = self.read_yaml(File.join(base_dir, dir), "#{url_key}.markdown")
       @episodedata['content'] = markdownify(self.content)
       @episodedata['key'] = url_key
       @episodedata['link'] = "/"
+      @episodedata['permalink'] = "/#{comic}/#{url_key}"
+      # @episodedata['name'] = 'index.html'
       @episodedata['comic'] = comic
+      data = @episodedata
+
+      super site, base_dir, dir, "#{url_key}.markdown"
     end
 
     def publish?
+      puts " checking publisch on epsidoe "
       @episodedata['published'].nil? or @episodedata['published'] != false
     end
 
@@ -36,6 +51,7 @@ module Jekyll
       converter = @site.getConverterImpl(Jekyll::Converters::Markdown)
       converter.convert(input)
     end
+
   end
 
 
@@ -54,7 +70,7 @@ module Jekyll
       entries = entries.reverse
       entries.each do |f|
           if f =~ /(.+)\.markdown/
-            episode = Episode.new(site, base, $1, comic)
+            episode = Episode.new(site, site.source, dir, $1, comic)
             if episode.publish?
               @@episodes[comic] ||= [] 
               @@episodes[comic] << episode.episodedata
@@ -83,8 +99,6 @@ module Jekyll
       @template_file = markup.strip
       super
     end
-
-
 
     def render(context)
       output = super

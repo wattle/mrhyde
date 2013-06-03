@@ -11,10 +11,72 @@ module Jekyll
 
   class Site
     attr_accessor :comics
+
+    # Recursively traverse directories to find posts, pages and static files
+    # that will become part of the site according to the rules in
+    # filter_entries.
+    #
+    # dir - The String relative path of the directory to read. Default: ''.
+    #
+    # Returns nothing.
+    def read_directories(dir = '')
+      base = File.join(self.source, dir)
+
+      # TODO override filter entries to filter out layouts and such
+      # plus allow for me to look at normal dirs below
+      entries = Dir.chdir(base) { filter_entries(Dir.entries('.')) }
+
+      self.read_posts(dir)
+
+      if self.show_drafts
+        self.read_drafts(dir)
+      end
+
+      self.posts.sort!
+
+      # limit the posts if :limit_posts option is set
+      if limit_posts > 0
+        limit = self.posts.length < limit_posts ? self.posts.length : limit_posts
+        self.posts = self.posts[-limit, limit]
+      end
+
+      entries.each do |f|
+        next if f == self.config['layouts']
+
+        f_abs = File.join(base, f)
+        f_rel = File.join(dir, f)
+        if File.directory?(f_abs)
+          next if self.dest.sub(/\/$/, '') == f_abs
+          read_directories(f_rel)
+        else
+          first3 = File.open(f_abs) { |fd| fd.read(3) }
+          if first3 == "---"
+            # TODO add a switch based on directory name?
+            # TODO also add filtering on the direcrories?
+            puts " looking at dir #{dir} #{f}"
+            dirs = dir.split('/')
+            # file appears to have a YAML header so process it as a page
+            if dirs.include?('pages') && dirs.include?('comics')
+              # TODO need the COMIC DIR and the episode without the markdown
+              # pages << Episode.new(self, self.source, dir, f, comic )
+              pages << Page.new(self, self.source, dir, f)
+            elsif dir =~ /comics\/(.+)/
+              puts " Creating comic #{$1}"
+              pages << Comic.new(self, self.source, dir, f, $1)
+            else
+              pages << Page.new(self, self.source, dir, f)
+            end  
+          else
+            # otherwise treat it as a static file
+            static_files << StaticFile.new(self, self.source, dir, f)
+          end
+        end
+      end
+    end
+
   end
 
-  class Comic
-    include Convertible
+  class Comic < Page
 
     attr_accessor :data, :content
     attr_accessor :comicdata
@@ -25,6 +87,7 @@ module Jekyll
       @comicdata['content'] = markdownify(self.content)
       @comicdata['key'] = url_key
       @comicdata['link'] = "/comics/#{url_key}"
+      super site, base, dir, name
     end
 
     def publish?
