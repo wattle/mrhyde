@@ -8,37 +8,26 @@ require_relative "./lib/include_tag"
 # {% episodes episode_list.html %}
 module Jekyll
 
-  class Page 
-
-    alias :old_destination :destination
-    def destination(dest)
-      result = old_destination(dest)
-      puts "DEST IS #{dest} -> #{result}"
-      result
-    end
-  end
-
   class Episode < Page
 
     attr_accessor :data, :content
     attr_accessor :episodedata
 
-    def initialize(site, base_dir, dir,  url_key, comic)
+    def initialize(site, base_dir, dir, url_key, comic)
       @site = site
-      @episodedata = self.read_yaml(File.join(base_dir, dir), "#{url_key}.markdown")
-      @episodedata['content'] = markdownify(self.content)
-      @episodedata['key'] = url_key
-      @episodedata['link'] = "/"
-      @episodedata['permalink'] = "/#{comic}/#{url_key}"
-      # @episodedata['name'] = 'index.html'
-      @episodedata['comic'] = comic
+      if url_key =~ /(.+)\.markdown|\.md/
+        @episodedata = self.read_yaml(File.join(base_dir, dir), "#{url_key}")
+        @episodedata['content'] = markdownify(self.content)
+        @episodedata['key'] = $1
+        @url = @episodedata['link'] = "/comics/#{comic}/#{$1}/index.html"
+        @episodedata['comic'] = comic
+      end
       data = @episodedata
 
-      super site, base_dir, dir, "#{url_key}.markdown"
+      super site, base_dir, dir, url_key
     end
 
     def publish?
-      puts " checking publisch on epsidoe "
       @episodedata['published'].nil? or @episodedata['published'] != false
     end
 
@@ -69,21 +58,27 @@ module Jekyll
       # Reverse chronological order
       entries = entries.reverse
       entries.each do |f|
-          if f =~ /(.+)\.markdown/
-            episode = Episode.new(site, site.source, dir, $1, comic)
+          if f =~ /(.+)\.markdown|\.md/
+            episode_name = $1
+            episode = Episode.new(site, site.source, dir, f, comic)
             if episode.publish?
               @@episodes[comic] ||= [] 
               @@episodes[comic] << episode.episodedata
             end
 
-            comic_dir = "#{public_base}/../#{$1}"
-            Dir.mkdir("#{comic_dir}") unless File.exists?("#{comic_dir}")
+            #if base =~ /(.+)\/pages/
+            #  comic_dir = "#{$1}/#{episode_name}"
+            #  puts " Creating directory #{comic_dir}"
+            #  Dir.mkdir("#{comic_dir}") unless File.exists?("#{comic_dir}")
+            #end
           # add images below 
           elsif f.downcase =~ /(.+)_.+-(\d+)\.[png|jpg|gif]/
             episode_name = $1
             (@@episode_map["#{comic}:#{episode_name}"] ||= []) << f
-            comic_dir = "#{public_base}/../#{episode_name}"
-            Dir.mkdir("#{comic_dir}") unless File.exists?("#{comic_dir}")
+            #if base =~ /(.+)\/pages/
+            #  comic_dir = "#{$1}/#{episode_name}"
+            #  Dir.mkdir("#{comic_dir}") unless File.exists?("#{comic_dir}")
+            #end
           end
       end
     end
@@ -105,7 +100,6 @@ module Jekyll
       comic_url = context.environments.first['page']['url']
       if comic_url =~ /^\/comics\/(.+)\/index.html$/
         comic_name = $1
-        puts "PRocessing comic #{comic_name}"
         @episodes = EpisodeList.episodes[comic_name]
         comic_meta = nil
         context.registers[:site].comics.each do |comic|

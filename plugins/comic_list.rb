@@ -50,18 +50,13 @@ module Jekyll
           read_directories(f_rel)
         else
           first3 = File.open(f_abs) { |fd| fd.read(3) }
+          # Process if YAML header found on top of file
           if first3 == "---"
-            # TODO add a switch based on directory name?
-            # TODO also add filtering on the direcrories?
-            puts " looking at dir #{dir} #{f}"
-            dirs = dir.split('/')
-            # file appears to have a YAML header so process it as a page
-            if dirs.include?('pages') && dirs.include?('comics')
-              # TODO need the COMIC DIR and the episode without the markdown
-              # pages << Episode.new(self, self.source, dir, f, comic )
-              pages << Page.new(self, self.source, dir, f)
+            # Switch object based on directory name?
+            # TODO also add filtering on the directories?
+            if dir =~ /comics\/(.+)\/pages/ 
+              pages << Episode.new(self, self.source, dir, f, $1 )
             elsif dir =~ /comics\/(.+)/
-              puts " Creating comic #{$1}"
               pages << Comic.new(self, self.source, dir, f, $1)
             else
               pages << Page.new(self, self.source, dir, f)
