@@ -1,15 +1,13 @@
 ---
 layout: default
 ---
-<h2>{{ comic.title }}</h2>
-<p class="meta"> date here</p>
+<h2>{{ page.title }}</h2>
 
 <div id="post">
-{{ comic.content }}
+{{ page.content }}
 </div>
 
 
 <div id="episodes">
-  {{comic.key}}
   {% episodes episode_list.html %}
 <div>

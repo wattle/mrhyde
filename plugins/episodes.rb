@@ -16,15 +16,22 @@ module Jekyll
     def initialize(site, base_dir, dir, url_key, comic)
       @site = site
       if url_key =~ /(.+)\.markdown|\.md/
-        @episodedata = self.read_yaml(File.join(base_dir, dir), "#{url_key}")
+        puts " calling this url leky thing"
+        @episodedata = self.read_yaml(File.join(base_dir, dir), "#{url_key}") || {}
         @episodedata['content'] = markdownify(self.content)
         @episodedata['key'] = $1
         @url = @episodedata['link'] = "/comics/#{comic}/#{$1}/index.html"
-        @episodedata['comic'] = comic
+        @episodedata['comic'] = comic  
       end
-      data = @episodedata
 
       super site, base_dir, dir, url_key
+      self.data = @episodedata
+    end
+
+    alias :old_to_liquid :to_liquid
+    def to_liquid
+      data = old_to_liquid
+      data
     end
 
     def publish?
@@ -65,20 +72,10 @@ module Jekyll
               @@episodes[comic] ||= [] 
               @@episodes[comic] << episode.episodedata
             end
-
-            #if base =~ /(.+)\/pages/
-            #  comic_dir = "#{$1}/#{episode_name}"
-            #  puts " Creating directory #{comic_dir}"
-            #  Dir.mkdir("#{comic_dir}") unless File.exists?("#{comic_dir}")
-            #end
           # add images below 
           elsif f.downcase =~ /(.+)_.+-(\d+)\.[png|jpg|gif]/
             episode_name = $1
             (@@episode_map["#{comic}:#{episode_name}"] ||= []) << f
-            #if base =~ /(.+)\/pages/
-            #  comic_dir = "#{$1}/#{episode_name}"
-            #  Dir.mkdir("#{comic_dir}") unless File.exists?("#{comic_dir}")
-            #end
           end
       end
     end
