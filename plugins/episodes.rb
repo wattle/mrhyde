@@ -16,7 +16,6 @@ module Jekyll
     def initialize(site, base_dir, dir, url_key, comic)
       @site = site
       if url_key =~ /(.+)\.markdown|\.md/
-        puts " calling this url leky thing"
         @episodedata = self.read_yaml(File.join(base_dir, dir), "#{url_key}") || {}
         @episodedata['content'] = markdownify(self.content)
         @episodedata['key'] = $1
@@ -70,12 +69,24 @@ module Jekyll
             episode = Episode.new(site, site.source, dir, f, comic)
             if episode.publish?
               @@episodes[comic] ||= [] 
+              if (idx = @@episodes[comic].length - 1) >= 0
+                prev = @@episodes[comic][idx]
+                prev['prev'] = {
+                  'title' => episode.episodedata['title'],
+                  'link' => episode.episodedata['link'] 
+                }
+                @@episodes[comic][idx] = prev
+                episode.episodedata['next'] = {
+                  'title' => prev['title'],
+                  'link' => prev['link'] 
+                }
+              end
               @@episodes[comic] << episode.episodedata
             end
           # add images below 
           elsif f.downcase =~ /(.+)_.+-(\d+)\.[png|jpg|gif]/
             episode_name = $1
-            (@@episode_map["#{comic}:#{episode_name}"] ||= []) << f
+            (@@episode_map["#{comic}:#{episode_name}"] ||= []) << "#{dir}/#{f}"
           end
       end
     end
@@ -112,6 +123,51 @@ module Jekyll
   end
 
 
+  class EpisodeTransitionTag < IncludeTag
+    def initialize(tag_name, markup, tokens)
+      @template_file = markup.strip
+      super
+    end
+
+    def render_type(name, output, context)
+      page = context.environments.first['page']
+      comic_url = page['url']
+      if comic_url =~ /^\/comics\/(.+)\/.+\/index.html$/
+        comic_name = $1
+        @episodes = EpisodeList.episodes[comic_name]
+        @episodes.each do |episode|
+          if episode['key'] == page['key']
+            @to = episode[name]
+            break
+          end
+        end
+      end
+
+      if @to
+        data = render_with_data(context, name => @to)
+      else 
+        output
+      end
+    end  
+
+  end
+
+  class EpisodeNextTag < EpisodeTransitionTag
+    def render(context)
+      output = super
+      render_type('next', output , context)
+    end 
+  end
+ 
+  class EpisodePreviousTag < EpisodeTransitionTag
+    def render(context)
+      output = super
+      render_type('prev', output, context)
+    end 
+  end
+
 end
 
 Liquid::Template.register_tag('episodes', Jekyll::EpisodelistTag)
+Liquid::Template.register_tag('nextepisode', Jekyll::EpisodeNextTag)
+Liquid::Template.register_tag('prevepisode', Jekyll::EpisodePreviousTag)

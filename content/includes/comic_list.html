@@ -1,11 +1,11 @@
 {% if comics %}
-	<ul>
+	<ul class="comics">
 	{% for comic in comics %}
-		<li>
+		<li class="comic">
 			<h3>{% if comic.link %}<a href="comics/{{ comic.key }}">{{ comic.title }}</a>{% else %}{{ comic.title }}{% endif %}</h3>
 			{{ comic.content }}
 			{% if comic.categories %}
-			<ul class="metadata">
+			<ul class="metadata tags">
 				<li>{{ comic.categories | join:', ' }}</li>
 			</ul>
 			{% endif %}
