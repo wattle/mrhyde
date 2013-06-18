@@ -4,9 +4,22 @@
   width: 450px
   background: #F4F1F1
 
-.comic, .episode
-  margin: 8px
+#body
+  display: table-cell
+  width: 80%
+
+.episode
+  padding: 4px
+
+
+.comic
   padding: 10px
+  margin: 8px
+
+.episode
+  padding: 4px
+
+.comic, .episode
   
   h3, h3 a
     color: #8b7d7b
@@ -16,7 +29,14 @@
       text-decoration: none
       
 
-.comics, #home, #episodes
+#content
+  display: table
+
+.comics, #episodes
+  font-size: 12px
+
+#home, #episodes
+  display: table-cell
   ul, ol
     list-style: none
     padding: 0

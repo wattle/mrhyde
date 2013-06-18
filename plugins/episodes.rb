@@ -94,6 +94,10 @@ module Jekyll
     def self.episodes
       @@episodes
     end
+
+    def self.episode_map
+      @@episode_map
+    end
   end
 
 

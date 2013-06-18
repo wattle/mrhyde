@@ -81,6 +81,8 @@ module Jekyll
       @comicdata = self.read_yaml(File.join(base, dir), name)
       @comicdata['content'] = markdownify(self.content)
       @comicdata['key'] = url_key
+      # TODO englishize?
+      @comicdata['comic'] = url_key
       @comicdata['link'] = "/comics/#{url_key}"
       super site, base, dir, name
     end
