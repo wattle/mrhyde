@@ -4,7 +4,7 @@
 
             // TOOD need to loop through images
             {% for panel in panels %}
-            {"src":"{{panel}}", "alt":"{{page.title}}"},
+            {"src":"/{{panel}}", "alt":"{{page.title}}"},
             {% endfor %}
         ];
         $('#panels').simpleSlideshow( {
@@ -18,7 +18,7 @@
 <div class="comic-panel"  >
     <div id="panels">
       <div>
-        <img src="{{starter_panel}}"  alt="{{page.title}}" />
+        <img src="/{{starter_panel}}"  alt="{{page.title}}" />
       </div>
     </div>
 </div>

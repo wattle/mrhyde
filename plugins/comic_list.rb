@@ -85,6 +85,7 @@ module Jekyll
       @comicdata['comic'] = url_key
       @comicdata['link'] = "/comics/#{url_key}"
       super site, base, dir, name
+      self.data = @comicdata
     end
 
     def publish?

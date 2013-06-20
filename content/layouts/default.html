@@ -3,7 +3,7 @@
     <head>
         <meta charset="utf-8">
         <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
-        <title>{{ page.title }}</title>
+        <title>{{ page.title }} - {% if page.comic %} {{page.comic}} {% endif %} </title>
         <meta name="viewport" content="width=device-width" />
         
         <meta name="author" content="{{ site.author }}" />
@@ -49,12 +49,12 @@
               name="{{ site.name }}"
               />
           <div class="title">
-          <h1>{{ page.comic | page.title }}</h1>
+          <h1> {% if page.keywords %}{{ page.comic }}{% else %} {{ page.title }} {% endif %}</h1>
           </div>
         </div>
 
 
-            {{ content }}
+        {{ content }}
 
 
       <!-- TODO setup social icons -->

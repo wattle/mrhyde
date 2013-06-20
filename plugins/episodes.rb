@@ -27,12 +27,6 @@ module Jekyll
       self.data = @episodedata
     end
 
-    alias :old_to_liquid :to_liquid
-    def to_liquid
-      data = old_to_liquid
-      data
-    end
-
     def publish?
       @episodedata['published'].nil? or @episodedata['published'] != false
     end

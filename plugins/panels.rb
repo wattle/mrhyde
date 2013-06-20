@@ -45,11 +45,10 @@ module Jekyll
       output = super
       page = context.environments.first['page']
       comic = page['comic']
-      
       @episodes = EpisodeList.episodes()[comic]
-
-      if @episodes && (episode = @episodes[0]) && (@panels = EpisodeList.episode_map["#{comic}:#{episode.episodedata['key']}"] )
-        @template_file = "#{@template_file}#{episode.episodedata['type']}.html"
+      episode = @episodes && @episodes[0]
+      if (@panels = EpisodeList.episode_map["#{comic}:#{episode['key']}"] )
+        @template_file = "#{@template_file}#{episode['type']}.html"
         firstpanel = @panels[0]
         show_multiple =  @panels.size > 1
         render_with_data(context, 'panels' => @panels, 'starter_panel' => firstpanel, 'show_multiple' => show_multiple)

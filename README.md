@@ -35,6 +35,9 @@ For each comic:
 
 
 ## TODO ##
+* Add breadcrumbs and navigation
+* Clean up styling of blog / comic panel navigation / overall look and feel
+* reverse panel array and fix slide show
 * Add comic generation based on name that will create directory and index
 * Add sketchbook generation? Link up with a tumblr account?
 * Push to S3 / create aws site with cloudfront / s3 / route 52
