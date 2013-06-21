@@ -25,8 +25,9 @@ module Jekyll
 
       @panels = EpisodeList.episode_map["#{comic}:#{episode}"]
       if @panels 
-        firstpanel = @panels[0]
+        @panels = @panels.clone
         show_multiple =  @panels.size > 1
+        firstpanel = @panels.shift
         render_with_data(context, 'panels' => @panels, 'starter_panel' => firstpanel, 'show_multiple' => show_multiple)
       else 
         output
@@ -49,8 +50,9 @@ module Jekyll
       episode = @episodes && @episodes[0]
       if (@panels = EpisodeList.episode_map["#{comic}:#{episode['key']}"] )
         @template_file = "#{@template_file}#{episode['type']}.html"
-        firstpanel = @panels[0]
+        @panels = @panels.clone
         show_multiple =  @panels.size > 1
+        firstpanel = @panels.shift
         render_with_data(context, 'panels' => @panels, 'starter_panel' => firstpanel, 'show_multiple' => show_multiple)
       else 
         output

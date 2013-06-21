@@ -12,4 +12,16 @@ module Jekyll
       self.data['path'] || File.join(@dir, 'blog', @name).sub(/\A\//, '')
     end
   end
+
+  class Site
+
+    alias :old_entries :get_entries
+    def get_entries(dir, subfolder)
+      if subfolder == '_posts'
+        subfolder = 'blog'
+      end
+      old_entries(dir, subfolder)
+    end
+  end
+
 end

@@ -1,19 +1,18 @@
 ---
 layout: default
 ---
-<h2>{{ page.title }} part 1</h2>
-<p class="meta">{{page.date}}</p>
+<div id="content" >
+  <div id="body" >
+    <h2>{{ page.title }} - {{page.date}}</h2>
+    {% panels panel- %}
+    <div id="post">
+    {{ page.content }}
+    </div>
+    {% prevepisode prev.html %} | {% nextepisode next.html %}
+  </div>
 
-
-{% panels panel- %}
-
-<div id="post">
-{{ page.content }}
+  <div id="episodes">
+    {% episodes episode_list.html %}
+    <div id="ad-area">add here </div>
+  </div>
 </div>
-
-
-{% prevepisode prev.html %} | {% nextepisode next.html %}
-
-<div id="episodes">
-  {% episodes episode_list.html %}
-<div>

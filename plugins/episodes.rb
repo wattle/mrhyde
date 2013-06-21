@@ -103,9 +103,7 @@ module Jekyll
 
     def render(context)
       output = super
-      comic_url = context.environments.first['page']['url']
-      if comic_url =~ /^\/comics\/(.+)\/index.html$/
-        comic_name = $1
+      if comic_name = context.environments.first['page']['comic']
         @episodes = EpisodeList.episodes[comic_name]
         comic_meta = nil
         context.registers[:site].comics.each do |comic|

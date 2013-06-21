@@ -1,20 +1,16 @@
 .comic
-  border: 1px solid #cdc9c9
+  border: 1px solid $dark-accent-color
   border-radius: 5px
-  width: 450px
-  background: #F4F1F1
-
-#body
-  display: table-cell
-  width: 80%
-
-.episode
-  padding: 4px
-
-
-.comic
+  background: $comic-background
   padding: 10px
   margin: 8px
+
+#body, #episodes
+  display: table-cell
+  vertical-align: top
+
+#body
+  padding: 10px
 
 .episode
   padding: 4px
@@ -28,15 +24,18 @@
     a 
       text-decoration: none
       
-
 #content
   display: table
 
 .comics, #episodes
   font-size: 12px
 
-#home, #episodes
-  display: table-cell
+#episodes
+  padding-left: 5px
+  width: 159px
+  border-left: 1px solid $default-border-color
+
+#home, #episodes  
   ul, ol
     list-style: none
     padding: 0
@@ -59,17 +58,14 @@
     img 
       border-radius: 5px
 #panels-paging 
-  position: absolute
-  top: 85px
   height: 25px
-  right: 0
-  left: 0
-  
+  margin-top: 45px
+
   a 
     border-radius: 3px
-    background-color: #d0d0d0
+    background-color: $paging-background
     color: white 
     padding: 5px 
     margin-right: 5px
     &.current-slide 
-      background-color: #000
+      background-color: $current-panel-background
